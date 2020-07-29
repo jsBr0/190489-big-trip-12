@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Yaroslav Oliinyk](https://up.htmlacademy.ru/ecmascript/12/user/190489).
-* Наставник: `Неизвестно`.
+* Наставник: [Maksim Deev](https://htmlacademy.ru/profile/id685777).
 
 ---
 
