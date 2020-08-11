@@ -7,6 +7,10 @@ import {createWaypointTemplate} from "./view/waypoint.js";
 import {createTripInfoRouteTemplate} from "./view/trip-info-route.js";
 import {createTripInfoCostTemplate} from "./view/trip-info-cost.js";
 
+import {generateTrip} from "./mock.js";
+
+console.log(generateTrip());
+
 const TASK_COUNT = 3;
 
 const render = (container, template, place) => {
