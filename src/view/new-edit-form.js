@@ -1,4 +1,32 @@
-export const createNewEditTemplate = () => {
+import {getFormattedDate} from "../utils.js";
+
+export const createNewEditTemplate = (event) => {
+  const {schedule, offers, info} = event;
+
+  const formattedStartDate = getFormattedDate(schedule.start);
+  const formattedEndDate = getFormattedDate(schedule.end);
+
+  const offersTemplate = offers
+    .map((item) => {
+      return `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item.key}-1" type="checkbox"
+        name="event-offer-${item.key}">
+      <label class="event__offer-label" for="event-offer-${item.key}-1">
+        <span class="event__offer-title">${item.title}</span>
+        +
+        €&nbsp;<span class="event__offer-price">${item.price}</span>
+      </label>
+    </div>`;
+    })
+    .join(``);
+
+  const destinationPhotosTemplate = info.photos
+    .map((item) => {
+      return `<img class="event__photo" src="${item}" alt="Event photo">`;
+    })
+    .join(``);
+
+
   return `<form class="trip-events__item  event  event--edit" action="#" method="post">
   <header class="event__header">
     <div class="event__type-wrapper">
@@ -7,7 +35,6 @@ export const createNewEditTemplate = () => {
         <img class="event__type-icon" width="17" height="17" src="img/icons/bus.png" alt="Event type icon">
       </label>
       <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
-
       <div class="event__type-list">
         <fieldset class="event__type-group">
           <legend class="visually-hidden">Transfer</legend>
@@ -20,7 +47,7 @@ export const createNewEditTemplate = () => {
 
           <div class="event__type-item">
             <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
-              value="bus" checked>
+              value="bus">
             <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
           </div>
 
@@ -51,11 +78,10 @@ export const createNewEditTemplate = () => {
 
           <div class="event__type-item">
             <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
-              value="flight">
+              value="flight" checked="">
             <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
           </div>
         </fieldset>
-
         <fieldset class="event__type-group">
           <legend class="visually-hidden">Activity</legend>
 
@@ -81,7 +107,6 @@ export const createNewEditTemplate = () => {
         </fieldset>
       </div>
     </div>
-
     <div class="event__field-group  event__field-group--destination">
       <label class="event__label  event__type-output" for="event-destination-1">
         Bus to
@@ -95,21 +120,19 @@ export const createNewEditTemplate = () => {
         <option value="Saint Petersburg"></option>
       </datalist>
     </div>
-
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">
         From
       </label>
       <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time"
-        value="18/03/19 00:00">
+        value="${formattedStartDate}">
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">
         To
       </label>
       <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time"
-        value="18/03/19 00:00">
+        value="${formattedEndDate}">
     </div>
-
     <div class="event__field-group  event__field-group--price">
       <label class="event__label" for="event-price-1">
         <span class="visually-hidden">Price</span>
@@ -117,7 +140,6 @@ export const createNewEditTemplate = () => {
       </label>
       <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
     </div>
-
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
     <button class="event__reset-btn" type="reset">Cancel</button>
   </header>
@@ -126,71 +148,17 @@ export const createNewEditTemplate = () => {
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
       <div class="event__available-offers">
-        <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox"
-            name="event-offer-luggage" checked="">
-          <label class="event__offer-label" for="event-offer-luggage-1">
-            <span class="event__offer-title">Add luggage</span>
-            +
-            €&nbsp;<span class="event__offer-price">30</span>
-          </label>
-        </div>
-
-        <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox"
-            name="event-offer-comfort" checked="">
-          <label class="event__offer-label" for="event-offer-comfort-1">
-            <span class="event__offer-title">Switch to comfort class</span>
-            +
-            €&nbsp;<span class="event__offer-price">100</span>
-          </label>
-        </div>
-
-        <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox"
-            name="event-offer-meal">
-          <label class="event__offer-label" for="event-offer-meal-1">
-            <span class="event__offer-title">Add meal</span>
-            +
-            €&nbsp;<span class="event__offer-price">15</span>
-          </label>
-        </div>
-
-        <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-1" type="checkbox"
-            name="event-offer-seats">
-          <label class="event__offer-label" for="event-offer-seats-1">
-            <span class="event__offer-title">Choose seats</span>
-            +
-            €&nbsp;<span class="event__offer-price">5</span>
-          </label>
-        </div>
-
-        <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-1" type="checkbox"
-            name="event-offer-train">
-          <label class="event__offer-label" for="event-offer-train-1">
-            <span class="event__offer-title">Travel by train</span>
-            +
-            €&nbsp;<span class="event__offer-price">40</span>
-          </label>
-        </div>
+        ${offersTemplate}
       </div>
     </section>
 
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">Geneva is a city in Switzerland that lies at the southern tip of
-        expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic
-        Mont Blanc.</p>
+      <p class="event__destination-description">${info.description}</p>
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
-          <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
+          ${destinationPhotosTemplate}
         </div>
       </div>
     </section>
