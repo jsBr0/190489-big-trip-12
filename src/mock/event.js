@@ -1,35 +1,21 @@
 import {getRandomInteger} from "../utils.js";
+import {EVENT_TYPES, DESTINATIONS, OFFERS, DESCRIPTION_TEMPLATE} from "../const.js";
 
 const MAX_SENTENCES_COUNT = 5;
 const MAX_IMAGES_COUNT = 2;
 const MIN_PRICE = 100;
 const MAX_PRICE = 300;
 
-const generateTypes = () => {
-  const types = [
-    {group: `Transfer`, title: `Taxi`},
-    {group: `Transfer`, title: `Bus`},
-    {group: `Transfer`, title: `Train`},
-    {group: `Transfer`, title: `Ship`},
-    {group: `Transfer`, title: `Transport`},
-    {group: `Transfer`, title: `Drive`},
-    {group: `Transfer`, title: `Flight`},
-    {group: `Activity`, title: `Check-in`},
-    {group: `Activity`, title: `Sightseeing`},
-    {group: `Activity`, title: `Restaurant`}
-  ];
+const generateType = () => {
+  const randomIndex = getRandomInteger(0, EVENT_TYPES.length - 1);
 
-  const randomIndex = getRandomInteger(0, types.length - 1);
-
-  return types[randomIndex];
+  return EVENT_TYPES[randomIndex];
 };
 
-const generateDestinations = () => {
-  const destinations = [`Kyiv`, `Kharkiv`, `Odessa`, `Dnipro`, `Zaporizhzhya`, `Lviv`];
+const generateDestination = () => {
+  const randomIndex = getRandomInteger(0, DESTINATIONS.length - 1);
 
-  const randomIndex = getRandomInteger(0, destinations.length - 1);
-
-  return destinations[randomIndex];
+  return DESTINATIONS[randomIndex];
 };
 
 const generateSchedule = () => {
@@ -52,21 +38,11 @@ const generateSchedule = () => {
 };
 
 const generateOffers = () => {
-  const offers = [
-    {key: `luggage`, title: `Add luggage`, price: `30`},
-    {key: `comfort`, title: `Switch to comfort class`, price: `100`},
-    {key: `meal`, title: `Add meal`, price: `15`},
-    {key: `seats`, title: `Choose seats`, price: `5`},
-    {key: `train`, title: `Travel by train`, price: `40`}
-  ];
-
-  return offers;
+  return OFFERS;
 };
 
 const generateDescription = (qty) => {
-  const template = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`;
-
-  const description = template
+  const description = DESCRIPTION_TEMPLATE
     .split(`. `)
     .map((item) => {
       if (!item.endsWith(`.`)) {
@@ -98,8 +74,8 @@ const generatePhotos = (qty) => {
 
 export const generateEventData = () => {
   return {
-    types: generateTypes(),
-    destinations: generateDestinations(),
+    type: generateType(),
+    destination: generateDestination(),
     schedule: generateSchedule(),
     price: getRandomInteger(MIN_PRICE, MAX_PRICE),
     offers: generateOffers(),
