@@ -49,8 +49,6 @@ const createEventEditFormTemplate = (event) => {
   })
   .join(``);
 
-  // Откуда взялся Amsterdam?
-
   const offerTemplate = OFFERS
     .map((item) => {
       return `<div class="event__offer-selector">
