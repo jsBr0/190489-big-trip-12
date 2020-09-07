@@ -13,8 +13,6 @@ const FIRST_EVENT = {
   },
 };
 
-// Не работает.
-
 const createEventEditFormTemplate = (event) => {
   const {type, destination, schedule, price, info} = event;
 
@@ -25,35 +23,25 @@ const createEventEditFormTemplate = (event) => {
     ? `to`
     : `in`;
 
-  const eventTransferTemplate = EVENT_TYPES
-    .map((item) => {
+  const eventTypesTemplate = (list) => {
+    return list.map((item) => {
       const titleLowerCase = item.title.toLowerCase();
-      const template = `<div class="event__type-item">
+      return `<div class="event__type-item">
       <input id="event-type-${titleLowerCase}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
         value="${titleLowerCase}">
       <label class="event__type-label  event__type-label--${titleLowerCase}" for="event-type-${titleLowerCase}-1">${item.title}</label>
     </div>`;
-      if (item.group === `Transfer`) {
-        return template;
-      }
     })
     .join(``);
+  };
 
-  const eventActivityTemplate = EVENT_TYPES
-    .map((item) => {
-      const titleLowerCase = item.title.toLowerCase();
-      const template = `<div class="event__type-item">
-      <input id="event-type-${titleLowerCase}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
-        value="${titleLowerCase}">
-      <label class="event__type-label  event__type-label--${titleLowerCase}" for="event-type-${titleLowerCase}-1">${item.title}</label>
-    </div>`;
-      if (item.group === `Activity`) {
-        return template;
-      }
-    })
-    .join(``);
+  const eventActivityTemplate = eventTypesTemplate(EVENT_TYPES.filter(function (item) {
+    return item.group === `Activity`;
+  }));
 
-  // Плохо. Как упростить? Для этой переменной взял данные не из моков а из констант, т.к. нужен весь массив для отрисовки, а не одно значение.
+  const eventTransferTemplate = eventTypesTemplate(EVENT_TYPES.filter(function (item) {
+    return item.group === `Transfer`;
+  }));
 
   const destinationTemplate = DESTINATIONS
   .map((item) => {
@@ -84,8 +72,7 @@ const createEventEditFormTemplate = (event) => {
     .join(``);
 
 
-  return `<li class="trip-events__item">
-  <form class="trip-events__item  event  event--edit" action="#" method="post">
+  return `<form class="trip-events__item  event  event--edit" action="#" method="post">
   <header class="event__header">
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -100,7 +87,6 @@ const createEventEditFormTemplate = (event) => {
         </fieldset>
         <fieldset class="event__type-group">
           <legend class="visually-hidden">Activity</legend>
-
           ${eventActivityTemplate}
         </fieldset>
       </div>
@@ -158,14 +144,10 @@ const createEventEditFormTemplate = (event) => {
       </div>
     </section>
   </section>
-</form>
-</li>`;
+</form`;
 };
 
-// Чтобы работал eventEditComponent.getElement().querySelector(`form`) (main.str 67), пришлось заключить форму в <li> и теперь, получается, что форма пригодна только для редактирования.
-// А как же тогда ее использовать для новых событий?
-
-export default class EventEdit {
+export default class PointEdit {
   constructor(event = FIRST_EVENT) {
     this._event = event;
     this._element = null;

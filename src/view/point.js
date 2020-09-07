@@ -62,7 +62,7 @@ const createEventTemplate = (event) => {
   </li>`;
 };
 
-export default class Event {
+export default class Point {
   constructor(events) {
     this._events = events;
     this._element = null;

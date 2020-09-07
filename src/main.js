@@ -5,8 +5,9 @@ import SiteFilterView from "./view/site-filter.js";
 import SiteSortView from "./view/site-sort.js";
 import DaysListView from "./view/days-list.js";
 import DaysContainerView from "./view/days-container.js";
-import EventView from "./view/event.js";
-import EventEditView from "./view/event-edit.js";
+import PointView from "./view/point.js";
+import PointEditView from "./view/point-edit-form.js";
+import NoPointView from "./view/no-point.js";
 import {render, RenderPosition} from "./utils.js";
 import {generateEventData} from "./mock/event.js";
 
@@ -48,9 +49,11 @@ const siteEventsElement = document.querySelector(`.trip-events`);
 
 render(siteEventsElement, new SiteSortView().getElement(), RenderPosition.BEFOREEND);
 
+render(siteEventsElement, new DaysListView().getElement(), RenderPosition.BEFOREEND);
+
 const renderEvent = (eventListElement, event) => {
-  const eventComponent = new EventView(event);
-  const eventEditComponent = new EventEditView(event);
+  const eventComponent = new PointView(event);
+  const eventEditComponent = new PointEditView(event);
 
   const replacePointToForm = () => {
     eventListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
@@ -60,21 +63,33 @@ const renderEvent = (eventListElement, event) => {
     eventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
   };
 
+  const onEscKeyDown = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
   eventComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
     replacePointToForm();
+    document.addEventListener(`keydown`, onEscKeyDown);
   });
 
-  eventEditComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
+  eventEditComponent.getElement().addEventListener(`submit`, (evt) => {
     evt.preventDefault();
     replaceFormToPoint();
+    document.removeEventListener(`keydown`, onEscKeyDown);
   });
 
   render(eventListElement, eventComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
-render(siteEventsElement, new DaysListView().getElement(), RenderPosition.BEFOREEND);
-
 const siteDaysListElement = document.querySelector(`.trip-days`);
+
+if (siteDaysListElement.childElementCount === 0) {
+  render(siteEventsElement, new NoPointView().getElement(), RenderPosition.BEFOREEND);
+}
 
 const renderEvents = (data) => {
   let dayIndex = 1;
