@@ -5,17 +5,17 @@ import SiteFilterView from "./view/site-filter.js";
 import SiteSortView from "./view/site-sort.js";
 import DaysListView from "./view/days-list.js";
 import DaysContainerView from "./view/days-container.js";
-import PointView from "./view/point.js";
-import PointEditView from "./view/point-edit-form.js";
-import NoPointView from "./view/no-point.js";
+import WaypointView from "./view/point.js";
+import WaypointFormView from "./view/point-edit-form.js";
+import NoPointsView from "./view/no-points.js";
 import {render, RenderPosition} from "./utils.js";
-import {generateEventData} from "./mock/event.js";
+import {generateEvent} from "./mock/event.js";
 
 const TASK_DATA_COUNT = 15;
 
 const eventsArr = new Array(TASK_DATA_COUNT)
 .fill()
-.map(generateEventData)
+.map(generateEvent)
 .sort((a, b) => {
   return new Date(a.schedule.start) - new Date(b.schedule.start);
 });
@@ -51,47 +51,43 @@ render(siteEventsElement, new SiteSortView().getElement(), RenderPosition.BEFORE
 
 render(siteEventsElement, new DaysListView().getElement(), RenderPosition.BEFOREEND);
 
-const renderEvent = (eventListElement, event) => {
-  const eventComponent = new PointView(event);
-  const eventEditComponent = new PointEditView(event);
+const renderWaypoint = (eventsListElement, event) => {
+  const waypointComponent = new WaypointView(event);
+  const waypointFormComponent = new WaypointFormView(event);
 
-  const replacePointToForm = () => {
-    eventListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+  const replaceWaypointToForm = () => {
+    eventsListElement.replaceChild(waypointFormComponent.getElement(), waypointComponent.getElement());
   };
 
-  const replaceFormToPoint = () => {
-    eventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+  const replaceFormToWaypoint = () => {
+    eventsListElement.replaceChild(waypointComponent.getElement(), waypointFormComponent.getElement());
   };
 
   const onEscKeyDown = (evt) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      replaceFormToPoint();
+      replaceFormToWaypoint();
       document.removeEventListener(`keydown`, onEscKeyDown);
     }
   };
 
-  eventComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
-    replacePointToForm();
+  waypointComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    replaceWaypointToForm();
     document.addEventListener(`keydown`, onEscKeyDown);
   });
 
-  eventEditComponent.getElement().addEventListener(`submit`, (evt) => {
+  waypointFormComponent.getElement().addEventListener(`submit`, (evt) => {
     evt.preventDefault();
-    replaceFormToPoint();
+    replaceFormToWaypoint();
     document.removeEventListener(`keydown`, onEscKeyDown);
   });
 
-  render(eventListElement, eventComponent.getElement(), RenderPosition.BEFOREEND);
+  render(eventsListElement, waypointComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
 const siteDaysListElement = document.querySelector(`.trip-days`);
 
-if (siteDaysListElement.childElementCount === 0) {
-  render(siteEventsElement, new NoPointView().getElement(), RenderPosition.BEFOREEND);
-}
-
-const renderEvents = (data) => {
+const renderWaypointsList = (data) => {
   let dayIndex = 1;
 
   for (const [key, value] of data.entries()) {
@@ -102,11 +98,15 @@ const renderEvents = (data) => {
     const siteEventsListElement = Array.from(document.querySelectorAll(`.trip-events__list`)).pop();
 
     value.forEach((element) => {
-      renderEvent(siteEventsListElement, element);
+      renderWaypoint(siteEventsListElement, element);
     });
 
     dayIndex++;
   }
 };
 
-renderEvents(events);
+if (events.size !== 0) {
+  renderWaypointsList(events);
+} else {
+  render(siteEventsElement, new NoPointsView().getElement(), RenderPosition.BEFOREEND);
+}

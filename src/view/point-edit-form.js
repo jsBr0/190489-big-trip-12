@@ -1,29 +1,25 @@
-import {createElement, getFormattedLocalDate} from "../utils.js";
+import {createElement, getLongLocalDate} from "../utils.js";
 import {EVENT_TYPES, DESTINATIONS, OFFERS} from "../const.js";
 
-const FIRST_EVENT = {
-  types: {group: `Transfer`, title: `Taxi`},
-  destinations: ``,
+const NEW_EVENT = {
+  type: {group: `Transfer`, placeholder: `to`, title: `Taxi`},
+  destination: ``,
   schedule: {start: null, end: null},
-  price: ``,
-  offers: {key: ``, title: ``, price: ``},
+  cost: ``,
+  offers: {name: ``, title: ``, price: ``},
   info: {
     description: ``,
     photos: ``,
   },
 };
 
-const createEventEditFormTemplate = (event) => {
-  const {type, destination, schedule, price, info} = event;
+const createWaypointFormTemplate = (event) => {
+  const {type, destination, schedule, cost, info} = event;
 
-  const formattedStartDate = getFormattedLocalDate(schedule.start);
-  const formattedEndDate = getFormattedLocalDate(schedule.end);
+  const longStartDate = getLongLocalDate(schedule.start);
+  const longEndDate = getLongLocalDate(schedule.end);
 
-  const placeholder = type.group === `Transfer`
-    ? `to`
-    : `in`;
-
-  const eventTypesTemplate = (list) => {
+  const eventTypesListTemplate = (list) => {
     return list.map((item) => {
       const titleLowerCase = item.title.toLowerCase();
       return `<div class="event__type-item">
@@ -35,26 +31,28 @@ const createEventEditFormTemplate = (event) => {
     .join(``);
   };
 
-  const eventActivityTemplate = eventTypesTemplate(EVENT_TYPES.filter(function (item) {
-    return item.group === `Activity`;
-  }));
+  const eventActivityTemplate = eventTypesListTemplate(EVENT_TYPES
+    .filter(function (item) {
+      return item.group === `Activity`;
+    }));
 
-  const eventTransferTemplate = eventTypesTemplate(EVENT_TYPES.filter(function (item) {
-    return item.group === `Transfer`;
-  }));
+  const eventTransferTemplate = eventTypesListTemplate(EVENT_TYPES
+    .filter(function (item) {
+      return item.group === `Transfer`;
+    }));
 
-  const destinationTemplate = DESTINATIONS
+  const destinationsTemplate = DESTINATIONS
   .map((item) => {
     return `<option value="${item}"></option>`;
   })
   .join(``);
 
-  const offerTemplate = OFFERS
+  const offersTemplate = OFFERS
     .map((item) => {
       return `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item.key}-1" type="checkbox"
-        name="event-offer-${item.key}">
-      <label class="event__offer-label" for="event-offer-${item.key}-1">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item.name}-1" type="checkbox"
+        name="event-offer-${item.name}">
+      <label class="event__offer-label" for="event-offer-${item.name}-1">
         <span class="event__offer-title">${item.title}</span>
         +
         €&nbsp;<span class="event__offer-price">${item.price}</span>
@@ -91,12 +89,12 @@ const createEventEditFormTemplate = (event) => {
     </div>
     <div class="event__field-group  event__field-group--destination">
       <label class="event__label  event__type-output" for="event-destination-1">
-        ${type.title} ${placeholder}
+        ${type.title} ${type.placeholder}
       </label>
       <input class="event__input  event__input--destination" id="event-destination-1" type="text"
         name="event-destination" value="${destination}" list="destination-list-1">
       <datalist id="destination-list-1">
-        ${destinationTemplate};
+        ${destinationsTemplate};
       </datalist>
     </div>
     <div class="event__field-group  event__field-group--time">
@@ -104,20 +102,20 @@ const createEventEditFormTemplate = (event) => {
         From
       </label>
       <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time"
-        value="${formattedStartDate}">
+        value="${longStartDate}">
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">
         To
       </label>
       <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time"
-        value="${formattedEndDate}">
+        value="${longEndDate}">
     </div>
     <div class="event__field-group  event__field-group--price">
       <label class="event__label" for="event-price-1">
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${cost}">
     </div>
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
     <button class="event__reset-btn" type="reset">Cancel</button>
@@ -127,7 +125,7 @@ const createEventEditFormTemplate = (event) => {
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
       <div class="event__available-offers">
-        ${offerTemplate}
+        ${offersTemplate}
       </div>
     </section>
 
@@ -145,14 +143,14 @@ const createEventEditFormTemplate = (event) => {
 </form`;
 };
 
-export default class PointEdit {
-  constructor(event = FIRST_EVENT) {
+export default class WaypointForm {
+  constructor(event = NEW_EVENT) {
     this._event = event;
     this._element = null;
   }
 
   getTemplate() {
-    return createEventEditFormTemplate(this._event);
+    return createWaypointFormTemplate(this._event);
   }
 
   getElement() {

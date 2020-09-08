@@ -1,29 +1,38 @@
-import {createElement, getISOLocalDate, getLocalTime} from "../utils.js";
+import {createElement, getISOLocalDate, getLocalTime, getTimeDiff} from "../utils.js";
 
-const MINUTES_RATIO = 0.0166666667;
-const MAX_OFFERS_COUNT = 3;
+const MAX_OFFERS_DISPLAY = 3;
 
-const createEventTemplate = (event) => {
-  const {type, destination, schedule, price, offers} = event;
+const createWaypointTemplate = (event) => {
+  const {type, destination, schedule, cost, offers} = event;
 
-  const placeholder = type.group === `Transfer`
-    ? `to`
-    : `in`;
-
-  const startDateISO = getISOLocalDate(schedule.start);
-  const endDateISO = getISOLocalDate(schedule.end);
+  const startDateISO = getISOLocalDate(schedule.start).substr(0, 16);
+  const endDateISO = getISOLocalDate(schedule.end).substr(0, 16);
 
   const startTime = getLocalTime(startDateISO);
   const endTime = getLocalTime(endDateISO);
 
-  const timeDifference = new Date(schedule.end).getTime() - new Date(schedule.start).getTime();
+  const getHumanizedDuration = () => {
+    const diff = getTimeDiff(schedule.end, schedule.start);
 
-  const duration = timeDifference / 1000 / 3600 >= 1
-    ? Math.round(timeDifference / 1000 / 3600) + `H`
-    : Math.round(timeDifference / 1000 / 3600 / MINUTES_RATIO) + `M`;
+    let humanizedDuration = `${diff} M`;
 
-  const offerTemplate = offers
-    .slice(0, MAX_OFFERS_COUNT)
+    const fullHours = Math.floor(diff / 60);
+    const fullDays = fullHours / 24;
+    const minutes = diff - fullHours * 60;
+
+    if (diff > 60 && diff < 60 * 24) {
+      humanizedDuration = `${fullHours}H ${minutes}M`;
+    } else if (diff > 60 * 24) {
+      humanizedDuration = `${fullDays}D ${fullHours - fullDays * 24}H ${minutes}M`;
+    }
+
+    return humanizedDuration;
+  };
+
+  const duration = getHumanizedDuration();
+
+  const offersTemplate = offers
+    .slice(0, MAX_OFFERS_DISPLAY)
     .map((item) => {
       return `<li class="event__offer">
           <span class="event__offer-title">${item.title}</span>
@@ -39,7 +48,7 @@ const createEventTemplate = (event) => {
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type.title}.png"
           alt="Event type icon">
       </div>
-      <h3 class="event__title">${type.title} ${placeholder} ${destination}</h3>
+      <h3 class="event__title">${type.title} ${type.placeholder} ${destination}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${startDateISO}">${startTime}</time>
@@ -49,11 +58,11 @@ const createEventTemplate = (event) => {
         <p class="event__duration">${duration}</p>
       </div>
       <p class="event__price">
-        €&nbsp;<span class="event__price-value">${price}</span>
+        €&nbsp;<span class="event__price-value">${cost}</span>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${offerTemplate}
+        ${offersTemplate}
       </ul>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
@@ -62,14 +71,14 @@ const createEventTemplate = (event) => {
   </li>`;
 };
 
-export default class Point {
+export default class Waypoint {
   constructor(events) {
     this._events = events;
     this._element = null;
   }
 
   getTemplate() {
-    return createEventTemplate(this._events);
+    return createWaypointTemplate(this._events);
   }
 
   getElement() {
