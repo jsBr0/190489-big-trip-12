@@ -1,6 +1,9 @@
-import {createElement, getISOLocalDate, getLocalTime, getTimeDiff} from "../utils.js";
+import {getISOLocalDate, getLocalTime, getTimeDiff} from "../utils/waypoint.js";
+import AbstractView from "./abstract.js";
 
-const MAX_OFFERS_DISPLAY = 3;
+const OFFERS_DISPLAY = 3;
+const HOUR = 60;
+const DAY = 24;
 
 const createWaypointTemplate = (event) => {
   const {type, destination, schedule, cost, offers} = event;
@@ -16,14 +19,15 @@ const createWaypointTemplate = (event) => {
 
     let humanizedDuration = `${diff} M`;
 
-    const fullHours = Math.floor(diff / 60);
-    const fullDays = fullHours / 24;
-    const minutes = diff - fullHours * 60;
+    const totalHours = Math.floor(diff / HOUR);
+    const totalDays = totalHours / DAY;
+    const cleanHours = totalHours - totalDays * DAY;
+    const cleanMinutes = diff - totalHours * HOUR;
 
-    if (diff > 60 && diff < 60 * 24) {
-      humanizedDuration = `${fullHours}H ${minutes}M`;
-    } else if (diff > 60 * 24) {
-      humanizedDuration = `${fullDays}D ${fullHours - fullDays * 24}H ${minutes}M`;
+    if (diff > HOUR && diff < DAY * HOUR) {
+      humanizedDuration = `${totalHours}H ${cleanMinutes}M`;
+    } else if (diff > DAY * HOUR) {
+      humanizedDuration = `${totalDays}D ${cleanHours}H ${cleanMinutes}M`;
     }
 
     return humanizedDuration;
@@ -31,8 +35,8 @@ const createWaypointTemplate = (event) => {
 
   const duration = getHumanizedDuration();
 
-  const offersTemplate = offers
-    .slice(0, MAX_OFFERS_DISPLAY)
+  const offerTemplates = offers
+    .slice(0, OFFERS_DISPLAY)
     .map((item) => {
       return `<li class="event__offer">
           <span class="event__offer-title">${item.title}</span>
@@ -62,7 +66,7 @@ const createWaypointTemplate = (event) => {
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${offersTemplate}
+        ${offerTemplates}
       </ul>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
@@ -71,25 +75,24 @@ const createWaypointTemplate = (event) => {
   </li>`;
 };
 
-export default class Waypoint {
+export default class Waypoint extends AbstractView {
   constructor(events) {
+    super();
     this._events = events;
-    this._element = null;
+    this._editClickHandler = this._editClickHandler.bind(this);
   }
 
   getTemplate() {
     return createWaypointTemplate(this._events);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
   }
 }

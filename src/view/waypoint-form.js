@@ -1,5 +1,6 @@
-import {createElement, getLongLocalDate} from "../utils.js";
+import {getLongLocalDate} from "../utils/waypoint.js";
 import {EVENT_TYPES, DESTINATIONS, OFFERS} from "../const.js";
+import AbstractView from "./abstract.js";
 
 const NEW_EVENT = {
   type: {group: `Transfer`, placeholder: `to`, title: `Taxi`},
@@ -143,25 +144,24 @@ const createWaypointFormTemplate = (event) => {
 </form`;
 };
 
-export default class WaypointForm {
+export default class WaypointForm extends AbstractView {
   constructor(event = NEW_EVENT) {
+    super();
     this._event = event;
-    this._element = null;
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
   getTemplate() {
     return createWaypointFormTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
   }
 
-  removeElement() {
-    this._element = null;
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().addEventListener(`submit`, this._formSubmitHandler);
   }
 }

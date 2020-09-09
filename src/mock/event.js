@@ -1,4 +1,4 @@
-import {getRandomInteger} from "../utils.js";
+import {getRandomInteger} from "../utils/common.js";
 import {EVENT_TYPES, DESTINATIONS, OFFERS, DESCRIPTION_TEMPLATE} from "../const.js";
 
 const DAYS_GAP = 7;

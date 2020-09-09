@@ -1,6 +1,7 @@
-import {createElement, getISOLocalDate, getShortLocalDate} from "../utils.js";
+import {getISOLocalDate, getShortLocalDate} from "../utils/waypoint.js";
+import AbstractView from "./abstract.js";
 
-const createDaysContainerTemplate = (counter, date) => {
+const createDayContainerTemplate = (counter, date) => {
 
   const ISODate = getISOLocalDate(date).substr(0, 10);
   const shortDate = getShortLocalDate(date).toUpperCase();
@@ -15,26 +16,14 @@ const createDaysContainerTemplate = (counter, date) => {
   </li>`;
 };
 
-export default class DaysContainer {
+export default class DayContainer extends AbstractView {
   constructor(counter, date) {
+    super();
     this._counter = counter;
     this._date = date;
-    this._element = null;
   }
 
   getTemplate() {
-    return createDaysContainerTemplate(this._counter, this._date);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+    return createDayContainerTemplate(this._counter, this._date);
   }
 }
