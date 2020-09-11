@@ -1,10 +1,11 @@
-import {getRandomInteger} from "../utils.js";
+import {getRandomInteger} from "../utils/common.js";
 import {EVENT_TYPES, DESTINATIONS, OFFERS, DESCRIPTION_TEMPLATE} from "../const.js";
 
-const MAX_SENTENCES_COUNT = 5;
-const MAX_IMAGES_COUNT = 2;
-const MIN_PRICE = 100;
-const MAX_PRICE = 300;
+const DAYS_GAP = 7;
+const MAX_SENTENCES_NUM = 5;
+const MAX_IMAGES_NUM = 2;
+const MIN_COST_VALUE = 100;
+const MAX_COST_VALUE = 300;
 
 const generateType = () => {
   const randomIndex = getRandomInteger(0, EVENT_TYPES.length - 1);
@@ -21,13 +22,13 @@ const generateDestination = () => {
 const generateSchedule = () => {
   const startDate = new Date();
 
-  const randomDaysGap = getRandomInteger(-7, 7);
+  const randomDaysGap = getRandomInteger(-DAYS_GAP, DAYS_GAP);
 
   startDate.setDate(startDate.getDate() + randomDaysGap);
 
   const endDate = new Date(startDate);
 
-  const randomMinutesGap = getRandomInteger(1, 60);
+  const randomMinutesGap = getRandomInteger(1, 180);
 
   endDate.setMinutes(endDate.getMinutes() + randomMinutesGap);
 
@@ -37,11 +38,9 @@ const generateSchedule = () => {
   };
 };
 
-const generateOffers = () => {
-  return OFFERS;
-};
+const generateOffers = () => OFFERS;
 
-const generateDescription = (qty) => {
+const generateDescription = (num) => {
   const description = DESCRIPTION_TEMPLATE
     .split(`. `)
     .map((item) => {
@@ -52,36 +51,36 @@ const generateDescription = (qty) => {
       }
     })
     .sort(() => Math.random() - 0.5)
-    .slice(0, getRandomInteger(1, qty))
+    .slice(0, getRandomInteger(1, num))
     .join(` `);
 
   return description;
 };
 
-const generatePhotos = (qty) => {
-  const generatePhotoLink = () => {
+const generatePhotos = (num) => {
+  const generateRandomPhotoLink = () => {
     return `http://picsum.photos/248/152?r=${Math.random()}`;
   };
 
   const photos = [];
 
-  for (let i = 0; i < qty; i++) {
-    photos.push(generatePhotoLink());
+  for (let i = 0; i < num; i++) {
+    photos.push(generateRandomPhotoLink());
   }
 
   return photos;
 };
 
-export const generateEventData = () => {
+export const generateEvent = () => {
   return {
     type: generateType(),
     destination: generateDestination(),
     schedule: generateSchedule(),
-    price: getRandomInteger(MIN_PRICE, MAX_PRICE),
+    cost: getRandomInteger(MIN_COST_VALUE, MAX_COST_VALUE),
     offers: generateOffers(),
     info: {
-      description: generateDescription(MAX_SENTENCES_COUNT),
-      photos: generatePhotos(MAX_IMAGES_COUNT),
+      description: generateDescription(MAX_SENTENCES_NUM),
+      photos: generatePhotos(MAX_IMAGES_NUM),
     },
   };
 };
