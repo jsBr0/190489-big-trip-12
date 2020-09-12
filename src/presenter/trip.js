@@ -11,7 +11,7 @@ import {SortType} from "../const.js";
 export default class Trip {
   constructor(tripEventsContainer) {
     this._tripEventsContainer = tripEventsContainer;
-    this._currentSortType = SortType.EVENT;
+    this._currentSortType = SortType.DEFAULT;
 
     this._sortComponent = new SortView();
     this._dayListComponent = new DayListView();
@@ -21,11 +21,18 @@ export default class Trip {
   }
 
   init(events) {
-    this._events = events.slice();
+    this._tripEvents = events.slice();
+    this._sourcedEvents = events.slice();
 
+    this._sortEventsByDay();
+
+    this._renderTrip();
+  }
+
+  _sortEventsByDay() {
     this._eventsByDay = new Map();
 
-    this._events.forEach((event) => {
+    this._tripEvents.forEach((event) => {
       const date = event.schedule.start.toDateString();
 
       if (!this._eventsByDay.has(date)) {
@@ -34,22 +41,18 @@ export default class Trip {
 
       this._eventsByDay.get(date).push(event);
     });
-
-    this._sourcedEvents = events.slice();
-
-    this._renderBigTrip();
   }
 
   _sortWaypoints(sortType) {
     switch (sortType) {
       case SortType.TIME:
-        this._events.sort(sortWaypointTime);
+        this._tripEvents.sort(sortWaypointTime);
         break;
       case SortType.PRICE:
-        this._events.sort(sortWaypointPrice);
+        this._tripEvents.sort(sortWaypointPrice);
         break;
       default:
-        this._events = this._sourcedEvents.slice();
+        this._tripEvents = this._sourcedEvents.slice();
     }
 
     this._currentSortType = sortType;
@@ -60,7 +63,14 @@ export default class Trip {
       return;
     }
 
-    this._sortTasks(sortType);
+    this._sortWaypoints(sortType);
+    this._clearWaypointList();
+
+    if (this._currentSortType === SortType.DEFAULT) {
+      this._renderWaypointEventList();
+    } else {
+      this._renderWaypointSortList();
+    }
   }
 
   _renderSort() {
@@ -101,11 +111,11 @@ export default class Trip {
     render(container, waypointComponent, RenderPosition.BEFOREEND);
   }
 
-  _renderWaypointList() {
+  _renderWaypointEventList() {
     let dayIndex = 1;
 
     for (const [key, value] of this._eventsByDay.entries()) {
-      const eventDate = new Date(key);
+      const eventDate = key === `sort` ? `` : new Date(key);
 
       const dayContainerComponent = new DayContainerView(dayIndex, eventDate);
 
@@ -122,18 +132,36 @@ export default class Trip {
     }
   }
 
+  _renderWaypointSortList() {
+    const dayContainerComponent = new DayContainerView();
+
+    render(this._tripEventsContainer, this._dayListComponent, RenderPosition.BEFOREEND);
+    render(this._dayListComponent, dayContainerComponent, RenderPosition.BEFOREEND);
+
+    const eventsList = Array.from(document.querySelectorAll(`.trip-events__list`)).pop();
+
+    this._tripEvents.forEach((item) => {
+      this._renderWaypoint(eventsList, item);
+    });
+  }
+
+  _clearWaypointList() {
+    this._sortComponent.getElement().querySelector(`.trip-sort__item--day`).innerHTML = ``;
+    this._dayListComponent.getElement().innerHTML = ``;
+  }
+
   _renderNoWaypoint() {
     render(this._tripEventsContainer, this._noWaypointComponent, RenderPosition.BEFOREEND);
   }
 
-  _renderBigTrip() {
-    if (this._events.size === 0) {
+  _renderTrip() {
+    if (this._tripEvents.size === 0) {
       this._renderNoWaypoint();
       return;
     }
 
     this._renderSort();
-    this._renderWaypointList();
+    this._renderWaypointEventList();
   }
 }
 

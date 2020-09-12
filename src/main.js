@@ -1,9 +1,9 @@
 import TripInfoView from "./view/trip-info.js";
 import MenuView from "./view/menu.js";
 import FilterView from "./view/filter.js";
+import TripPresenter from "./presenter/trip.js";
 import {render, RenderPosition} from "./utils/render.js";
 import {generateEvent} from "./mock/event.js";
-import TripPresenter from "./presenter/trip.js";
 
 const TASK_DATA_COUNT = 15;
 
