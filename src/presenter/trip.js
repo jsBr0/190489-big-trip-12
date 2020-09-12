@@ -5,10 +5,13 @@ import NoWaypointView from "../view/no-waypoint.js";
 import WaypointView from "../view/waypoint.js";
 import WaypointFormView from "../view/waypoint-form.js";
 import {render, RenderPosition, replace} from "../utils/render.js";
+import {sortWaypointTime, sortWaypointPrice} from "../utils/waypoint.js";
+import {SortType} from "../const.js";
 
 export default class Trip {
   constructor(tripEventsContainer) {
     this._tripEventsContainer = tripEventsContainer;
+    this._currentSortType = SortType.EVENT;
 
     this._sortComponent = new SortView();
     this._dayListComponent = new DayListView();
@@ -18,12 +21,46 @@ export default class Trip {
   }
 
   init(events) {
-    this._events = new Map(events);
+    this._events = events.slice();
+
+    this._eventsByDay = new Map();
+
+    this._events.forEach((event) => {
+      const date = event.schedule.start.toDateString();
+
+      if (!this._eventsByDay.has(date)) {
+        this._eventsByDay.set(date, []);
+      }
+
+      this._eventsByDay.get(date).push(event);
+    });
+
+    this._sourcedEvents = events.slice();
 
     this._renderBigTrip();
   }
 
+  _sortWaypoints(sortType) {
+    switch (sortType) {
+      case SortType.TIME:
+        this._events.sort(sortWaypointTime);
+        break;
+      case SortType.PRICE:
+        this._events.sort(sortWaypointPrice);
+        break;
+      default:
+        this._events = this._sourcedEvents.slice();
+    }
+
+    this._currentSortType = sortType;
+  }
+
   _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortTasks(sortType);
   }
 
   _renderSort() {
@@ -67,7 +104,7 @@ export default class Trip {
   _renderWaypointList() {
     let dayIndex = 1;
 
-    for (const [key, value] of this._events.entries()) {
+    for (const [key, value] of this._eventsByDay.entries()) {
       const eventDate = new Date(key);
 
       const dayContainerComponent = new DayContainerView(dayIndex, eventDate);

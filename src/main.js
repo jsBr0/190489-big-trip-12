@@ -14,18 +14,6 @@ const events = new Array(TASK_DATA_COUNT)
   return new Date(date1.schedule.start) - new Date(date2.schedule.start);
 });
 
-const eventsByDay = new Map();
-
-events.forEach((event) => {
-  const date = event.schedule.start.toDateString();
-
-  if (!eventsByDay.has(date)) {
-    eventsByDay.set(date, []);
-  }
-
-  eventsByDay.get(date).push(event);
-});
-
 const siteMainElement = document.querySelector(`.trip-main`);
 const siteTripControlsElement = document.querySelector(`.trip-main__trip-controls`);
 
@@ -37,4 +25,4 @@ const siteEventsElement = document.querySelector(`.trip-events`);
 
 const tripPresenter = new TripPresenter(siteEventsElement);
 
-tripPresenter.init(eventsByDay);
+tripPresenter.init(events);
