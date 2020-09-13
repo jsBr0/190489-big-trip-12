@@ -2,9 +2,20 @@ import {getISOLocalDate, getShortLocalDate} from "../utils/waypoint.js";
 import AbstractView from "./abstract.js";
 
 const createDayContainerTemplate = (counter, date) => {
+  if (counter === undefined) {
+    counter = ``;
+  }
 
-  const ISODate = getISOLocalDate(date).substr(0, 10);
-  const shortDate = getShortLocalDate(date).toUpperCase();
+  let ISODate;
+  let shortDate;
+
+  if (date === undefined) {
+    ISODate = ``;
+    shortDate = ``;
+  } else {
+    ISODate = getISOLocalDate(date).substr(0, 10);
+    shortDate = getShortLocalDate(date).toUpperCase();
+  }
 
   return `<li class="trip-days__item  day">
     <div class="day__info">

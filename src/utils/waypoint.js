@@ -17,10 +17,20 @@ export const getShortLocalDate = (date) => {
 
 export const getLocalTime = (date) => new Date(date).toLocaleString(`en-GB`, {hour: `2-digit`, minute: `2-digit`});
 
-export const getTimeDiff = (end, start) => {
-  let diff = (end.getTime() - start.getTime()) / 1000;
+export const getTimeDiff = (eventEnd, eventStart) => {
+  let diff = (eventEnd.getTime() - eventStart.getTime()) / 1000;
 
   diff /= 60;
 
   return Math.abs(Math.round(diff));
 };
+
+export const sortWaypointPrice = (eventA, eventB) => {
+  return eventB.cost - eventA.cost;
+};
+
+export const sortWaypointTime = (eventA, eventB) => {
+  return getTimeDiff(eventB.schedule.end, eventB.schedule.start) - getTimeDiff(eventA.schedule.end, eventA.schedule.start);
+};
+
+
