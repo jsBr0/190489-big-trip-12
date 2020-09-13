@@ -25,11 +25,11 @@ export const getTimeDiff = (eventEnd, eventStart) => {
   return Math.abs(Math.round(diff));
 };
 
-export const sortWaypointPrice = (eventA, eventB) => {
+export const sortWaypointsByPrice = (eventA, eventB) => {
   return eventB.cost - eventA.cost;
 };
 
-export const sortWaypointTime = (eventA, eventB) => {
+export const sortWaypointsByTime = (eventA, eventB) => {
   return getTimeDiff(eventB.schedule.end, eventB.schedule.start) - getTimeDiff(eventA.schedule.end, eventA.schedule.start);
 };
 

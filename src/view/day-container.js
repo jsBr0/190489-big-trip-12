@@ -1,18 +1,11 @@
 import {getISOLocalDate, getShortLocalDate} from "../utils/waypoint.js";
 import AbstractView from "./abstract.js";
 
-const createDayContainerTemplate = (counter, date) => {
-  if (counter === undefined) {
-    counter = ``;
-  }
+const createDayContainerTemplate = (counter = ``, date) => {
+  let ISODate = ``;
+  let shortDate = ``;
 
-  let ISODate;
-  let shortDate;
-
-  if (date === undefined) {
-    ISODate = ``;
-    shortDate = ``;
-  } else {
+  if (date !== undefined) {
     ISODate = getISOLocalDate(date).substr(0, 10);
     shortDate = getShortLocalDate(date).toUpperCase();
   }
