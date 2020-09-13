@@ -1,6 +1,6 @@
 import WaypointView from "../view/waypoint.js";
 import WaypointFormView from "../view/waypoint-form.js";
-import {render, RenderPosition, replace} from "../utils/render.js";
+import {render, RenderPosition, replace, remove} from "../utils/render.js";
 
 export default class Waypoint {
   constructor(eventsListContainer) {
@@ -17,13 +17,35 @@ export default class Waypoint {
   init(event) {
     this._event = event;
 
+    const prevWaypointComponent = this._waypointComponent;
+    const prevWaypointFormComponent = this._waypointFormComponent;
+
     this._waypointComponent = new WaypointView(event);
     this._waypointFormComponent = new WaypointFormView(event);
 
     this._waypointComponent.setEditClickHandler(this._handleEditClick);
     this._waypointFormComponent.setFormSubmitHandler(this._handleFormSubmit);
 
-    render(this._eventsListContainer, this._waypointComponent, RenderPosition.BEFOREEND);
+    if (prevWaypointComponent === null || prevWaypointFormComponent === null) {
+      render(this._eventsListContainer, this._waypointComponent, RenderPosition.BEFOREEND);
+      return;
+    }
+
+    if (this._eventsListContainer.getElement().contains(prevWaypointComponent.getElement())) {
+      replace(this._waypointComponent, prevWaypointComponent);
+    }
+
+    if (this._eventsListContainer.getElement().contains(prevWaypointFormComponent.getElement())) {
+      replace(this._waypointFormComponent, prevWaypointFormComponent);
+    }
+
+    remove(prevWaypointComponent);
+    remove(prevWaypointFormComponent);
+  }
+
+  destroy() {
+    remove(this._waypointComponent);
+    remove(this._waypointFormComponent);
   }
 
   _replaceWaypointToForm() {

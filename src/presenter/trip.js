@@ -2,8 +2,9 @@ import SortView from "../view/sort.js";
 import DayListView from "../view/day-list.js";
 import DayContainerView from "../view/day-container.js";
 import NoWaypointView from "../view/no-waypoint.js";
-import {render, RenderPosition} from "../utils/render.js";
 import WaypointPresenter from "../presenter/waypoint.js";
+import {updateItem} from "../utils/common.js";
+import {render, RenderPosition} from "../utils/render.js";
 import {sortWaypointsByTime, sortWaypointsByPrice} from "../utils/waypoint.js";
 import {SortType} from "../const.js";
 
@@ -11,11 +12,13 @@ export default class Trip {
   constructor(tripEventsContainer) {
     this._tripEventsContainer = tripEventsContainer;
     this._currentSortType = SortType.EVENT;
+    this._waypointPresenter = {};
 
     this._sortComponent = new SortView();
     this._dayListComponent = new DayListView();
     this._noWaypointComponent = new NoWaypointView();
 
+    this._handleWaypointChange = this._handleWaypointChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
@@ -38,6 +41,12 @@ export default class Trip {
 
       this._eventsByDay.get(date).push(event);
     });
+  }
+
+  _handleWaypointChange(updatedEvent) {
+    this._tripEvents = updateItem(this._tripEvents, updatedEvent);
+    this._sourcedEvents = updateItem(this._sourcedEvents, updatedEvent);
+    this._waypointPresenter[updatedEvent.id].init(updatedEvent);
   }
 
   _sortWaypoints(sortType) {
@@ -78,6 +87,7 @@ export default class Trip {
   _renderWaypoint(container, event) {
     const waypointPresenter = new WaypointPresenter(container);
     waypointPresenter.init(event);
+    this._waypointPresenter[event.id] = waypointPresenter;
   }
 
   _renderWaypointsList() {
@@ -118,8 +128,11 @@ export default class Trip {
   }
 
   _clearWaypointsList() {
-    this._sortComponent.getElement().querySelector(`.trip-sort__item--day`).innerHTML = ``;
     this._dayListComponent.getElement().innerHTML = ``;
+    Object
+      .values(this._waypointPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._waypointPresenter = {};
   }
 
   _renderNoWaypoints() {

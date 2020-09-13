@@ -7,6 +7,8 @@ const MAX_IMAGES_NUM = 2;
 const MIN_COST_VALUE = 100;
 const MAX_COST_VALUE = 300;
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 const generateType = () => {
   const randomIndex = getRandomInteger(0, EVENT_TYPES.length - 1);
 
@@ -73,6 +75,7 @@ const generatePhotos = (num) => {
 
 export const generateEvent = () => {
   return {
+    id: generateId(),
     type: generateType(),
     destination: generateDestination(),
     schedule: generateSchedule(),
