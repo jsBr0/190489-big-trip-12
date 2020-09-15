@@ -4,17 +4,17 @@ import AbstractView from "./abstract.js";
 const createDayContainerTemplate = (counter = ``, date) => {
   let ISODate = ``;
   let shortDate = ``;
+  let dayInfoTemplate = ``;
 
   if (date !== undefined) {
     ISODate = getISOLocalDate(date).substr(0, 10);
     shortDate = getShortLocalDate(date).toUpperCase();
+    dayInfoTemplate = `<span class="day__counter">${counter}</span>
+    <time class="day__date" datetime="${ISODate}">${shortDate}</time>`;
   }
 
   return `<li class="trip-days__item  day">
-    <div class="day__info">
-      <span class="day__counter">${counter}</span>
-      <time class="day__date" datetime="${ISODate}">${shortDate}</time>
-    </div>
+    <div class="day__info">${dayInfoTemplate}</div>
     <ul class="trip-events__list">
     </ul>
   </li>`;

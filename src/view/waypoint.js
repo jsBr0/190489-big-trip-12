@@ -46,8 +46,7 @@ const createWaypointTemplate = (event) => {
     })
     .join(``);
 
-  return `<li class="trip-events__item">
-    <div class="event">
+  return `<div class="event">
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type.title}.png"
           alt="Event type icon">
@@ -71,8 +70,7 @@ const createWaypointTemplate = (event) => {
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
-    </div>
-  </li>`;
+    </div>`;
 };
 
 export default class Waypoint extends AbstractView {

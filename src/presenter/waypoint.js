@@ -3,8 +3,9 @@ import WaypointFormView from "../view/waypoint-form.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
 
 export default class Waypoint {
-  constructor(eventsListContainer) {
+  constructor(eventsListContainer, changeData) {
     this._eventsListContainer = eventsListContainer;
+    this._changeData = changeData;
 
     this._waypointComponent = null;
     this._waypointFormComponent = null;
